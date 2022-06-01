@@ -1,12 +1,14 @@
 <template>
-  <section class="min-h-[90.5vh] bg-slate-900">
+  <section>
     <div class="relative">
       <img
-        class="object-contain w-full"
+        class="object-cover w-full md:h-72"
         src="@/assets/avatar.jpg"
         alt="Avatar The Last Air Bender"
       />
-      <div class="absolute bg-black/60 p-3 bottom-0 w-full text-white">
+      <div
+        class="absolute bg-black/60 p-3 bottom-0 w-full text-white md:hidden"
+      >
         <h3 class="mb-2 font-bold">Avatar</h3>
         <p>
           In a war-torn world of elemental magic, a young boy reawakens to
@@ -15,19 +17,24 @@
         </p>
       </div>
     </div>
-    <div class="container mx-auto p-4">
-      <form class="text-center px-3 py-5" @submit.prevent="SearchMovie">
+    <div class="container mx-auto md:ml-auto p-4">
+      <form class="text-center md:text-left py-5" @submit.prevent="SearchMovie">
         <input
           type="text"
           v-model="searchValue"
           placeholder="What movie are you looking for ?"
           class="
             rounded
-            p-3
+            py-2
+            px-3
             bg-slate-500/40
             font-medium
             w-full
+            lg:w-1/3
+            md:w-1/2
+            mr-2
             mb-3
+            md:mb-0
             text-white
             focus:ring-2
             hover:ring-2
@@ -43,20 +50,28 @@
             rounded
             text-white
             p-2
-            min-w-[130px]
-            uppercase
+            min-w-[100px]
             font-medium
+            uppercase
           "
         >
           Search
         </button>
       </form>
       <p class="text-white text-3xl mb-4">
-        <span v-show="item_length"
-          >Search {{ item_length }} results for "{{ searchValue }}"</span
-        >
+        <span v-show="item_length">Search results for "{{ searchValue }}"</span>
       </p>
+      <preloader v-show="loading" />
       <movie-card :movies="movies" />
+      <div class="text-center">
+        <button
+          v-show="item_length"
+          class="text-white hover:text-green-500 mt-6"
+          @click="GetMore"
+        >
+          Show More Results...
+        </button>
+      </div>
     </div>
   </section>
 </template>
@@ -64,6 +79,7 @@
 <script>
 import axios from "axios";
 import MovieCard from "@/components/MovieCard.vue";
+import Preloader from "@/components/Preloader.vue";
 
 const baseUrl = "https://www.omdbapi.com/?apikey=10d2a084";
 
@@ -75,8 +91,11 @@ export default {
       baseUrl,
       movies: [],
       item_length: 0,
+      current_page: 1,
+      loading: false,
     };
   },
+  components: { MovieCard, Preloader },
   methods: {
     async SearchMovie() {
       try {
@@ -84,11 +103,22 @@ export default {
         this.movies = res.data.Search;
         this.item_length = this.movies.length;
       } catch (error) {
-        console.log(error);
+        console.error(error);
+      }
+    },
+    async GetMore() {
+      this.loading = true;
+      try {
+        let res = await axios.get(
+          `${this.baseUrl}&s=${this.searchValue}&page=${this.current_page + 1}`
+        );
+        this.loading = false;
+        this.movies = this.movies.concat(res.data.Search);
+      } catch (error) {
+        console.error(error);
       }
     },
   },
-  components: { MovieCard },
 };
 </script>
 

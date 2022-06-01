@@ -9,5 +9,13 @@
   <router-view />
 </template>
 
+<script>
+export default {};
+</script>
+
 <style>
+#app {
+  min-height: 100vh;
+  background-color: #0f172a;
+}
 </style>
