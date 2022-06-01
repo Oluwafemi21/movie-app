@@ -1,10 +1,5 @@
 <template>
-  <div class="min-h-screen bg-slate-900">
-    <header class="bg-slate-900 text-center py-3">
-      <h1 class="text-4xl font-medium text-white">
-        <span class="text-green-500">Vue</span>Movies
-      </h1>
-    </header>
+  <section class="min-h-[90.5vh] bg-slate-900">
     <div class="relative">
       <img
         class="object-contain w-full"
@@ -14,9 +9,9 @@
       <div class="absolute bg-black/60 p-3 bottom-0 w-full text-white">
         <h3 class="mb-2 font-bold">Avatar</h3>
         <p>
-          The last airbender has woken up from a deep sleep of over 100years
-          with the aim of maintaining balance to the four nations which is
-          primarily his duty.
+          In a war-torn world of elemental magic, a young boy reawakens to
+          undertake a dangerous mystic quest to fulfill his destiny as the
+          Avatar, and bring peace to the world.
         </p>
       </div>
     </div>
@@ -56,37 +51,14 @@
           Search
         </button>
       </form>
-      <ul
-        class="grid gap-x-4 gap-y-8 grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-      >
-        <li v-for="movie in movies" :key="movie.imdbID" class="relative">
-          <img
-            class="h-64 w-full object-cover"
-            :src="movie.Poster"
-            :alt="movie.Title"
-          />
-          <h5
-            class="
-              bg-green-600
-              uppercase
-              text-white
-              py-2
-              px-4
-              rounded-r
-              absolute
-              top-0
-            "
-          >
-            {{ movie.Type }}
-          </h5>
-          <div class="bg-slate-600 rounded-b py-2 px-1">
-            <span class="text-sm text-gray-400">{{ movie.Year }}</span>
-            <p class="text-white font-medium">{{ movie.Title }}</p>
-          </div>
-        </li>
-      </ul>
+      <p class="text-white text-3xl mb-4">
+        <span v-show="item_length"
+          >Search {{ item_length }} results for "{{ searchValue }}"</span
+        >
+      </p>
+      <movie-card :movies="movies" />
     </div>
-  </div>
+  </section>
 </template>
 
 <script>
@@ -102,15 +74,18 @@ export default {
       searchValue: "",
       baseUrl,
       movies: [],
+      item_length: 0,
     };
   },
   methods: {
     async SearchMovie() {
-      let res = await axios.get(`${this.baseUrl}&s=${this.searchValue}`);
-
-      this.movies = res.data.Search;
-
-      console.log(res.data);
+      try {
+        let res = await axios.get(`${this.baseUrl}&s=${this.searchValue}`);
+        this.movies = res.data.Search;
+        this.item_length = this.movies.length;
+      } catch (error) {
+        console.log(error);
+      }
     },
   },
   components: { MovieCard },
