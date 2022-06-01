@@ -47,11 +47,13 @@ export default {
     };
   },
   async beforeMount() {
-    let res = await axios.get(`${this.baseUrl}&i=${this.$route.params.id}`);
+    try {
+      let res = await axios.get(`${this.baseUrl}&i=${this.$route.params.id}`);
 
-    this.movieInfo = res.data;
-
-    console.log(res.data);
+      this.movieInfo = res.data;
+    } catch (error) {
+      console.log(error);
+    }
   },
 };
 </script>
