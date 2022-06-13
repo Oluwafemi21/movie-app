@@ -98,21 +98,21 @@ export default {
   components: { MovieCard, Preloader },
   methods: {
     async SearchMovie() {
+      this.loading = true;
       try {
         let res = await axios.get(`${this.baseUrl}&s=${this.searchValue}`);
         this.movies = res.data.Search;
         this.item_length = this.movies.length;
+        this.loading = false;
       } catch (error) {
         console.error(error);
       }
     },
     async GetMore() {
-      this.loading = true;
       try {
         let res = await axios.get(
           `${this.baseUrl}&s=${this.searchValue}&page=${this.current_page + 1}`
         );
-        this.loading = false;
         this.movies = this.movies.concat(res.data.Search);
       } catch (error) {
         console.error(error);
